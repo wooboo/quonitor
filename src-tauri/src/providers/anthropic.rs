@@ -95,6 +95,15 @@ impl QuotaProvider for AnthropicProvider {
         })
     }
 
+    fn supports_oauth(&self) -> bool {
+        false
+    }
+
+    fn provider_name(&self) -> &'static str {
+        "Anthropic"
+    }
+}
+
         let usage_response: UsageResponse = response.json().await?;
 
         // Aggregate by model
@@ -145,6 +154,11 @@ impl QuotaProvider for AnthropicProvider {
     fn supports_oauth(&self) -> bool {
         false
     }
+
+    fn provider_name(&self) -> &'static str {
+        "Anthropic"
+    }
+}
 
     fn provider_name(&self) -> &'static str {
         "Anthropic"
