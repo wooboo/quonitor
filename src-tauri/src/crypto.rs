@@ -22,36 +22,59 @@ impl CryptoService {
     }
 
     fn get_or_create_master_key() -> Result<[u8; 32]> {
-        // Try to get key from keyring
-        match keyring::Entry::new("quonitor", "master_key") {
-            Ok(entry) => {
-                match entry.get_password() {
-                    Ok(key_str) => {
-                        // Decode existing key
-                        let key_bytes = general_purpose::STANDARD
-                            .decode(&key_str)
-                            .map_err(|e| QuonitorError::Encryption(format!("Failed to decode key: {}", e)))?;
-
-                        let mut key = [0u8; 32];
+        // Try to get key from keyring first
+        if let Ok(entry) = keyring::Entry::new("quonitor", "master_key") {
+            if let Ok(key_str) = entry.get_password() {
+                if let Ok(key_bytes) = general_purpose::STANDARD.decode(&key_str) {
+                    let mut key = [0u8; 32];
+                    if key_bytes.len() == 32 {
                         key.copy_from_slice(&key_bytes);
-                        Ok(key)
-                    }
-                    Err(_) => {
-                        // Generate new key
-                        let key = Aes256Gcm::generate_key(OsRng);
-                        let key_str = general_purpose::STANDARD.encode(&key);
-
-                        entry.set_password(&key_str)
-                            .map_err(|e| QuonitorError::Encryption(format!("Failed to store key: {}", e)))?;
-
-                        Ok(key.into())
+                        return Ok(key);
                     }
                 }
             }
-            Err(e) => {
-                Err(QuonitorError::Encryption(format!("Failed to access keyring: {}", e)))
+        }
+
+        // Fallback: Try file-based key in app data directory
+        let data_dir = dirs::data_local_dir()
+            .map(|p| p.join("quonitor"))
+            .ok_or_else(|| QuonitorError::Encryption("Failed to get data directory".to_string()))?;
+            
+        std::fs::create_dir_all(&data_dir)
+            .map_err(|e| QuonitorError::Encryption(format!("Failed to create data dir: {}", e)))?;
+            
+        let key_path = data_dir.join("master.key");
+        
+        if key_path.exists() {
+            // Read existing key from file
+            let key_str = std::fs::read_to_string(&key_path)
+                .map_err(|e| QuonitorError::Encryption(format!("Failed to read key file: {}", e)))?;
+                
+            let key_bytes = general_purpose::STANDARD
+                .decode(key_str.trim())
+                .map_err(|e| QuonitorError::Encryption(format!("Failed to decode file key: {}", e)))?;
+
+            let mut key = [0u8; 32];
+            if key_bytes.len() == 32 {
+                key.copy_from_slice(&key_bytes);
+                return Ok(key);
             }
         }
+
+        // Generate new key if neither found
+        let key = Aes256Gcm::generate_key(OsRng);
+        let key_str = general_purpose::STANDARD.encode(&key);
+
+        // Try to save to keyring
+        if let Ok(entry) = keyring::Entry::new("quonitor", "master_key") {
+            let _ = entry.set_password(&key_str);
+        }
+
+        // Always save to file as backup/primary
+        std::fs::write(&key_path, &key_str)
+            .map_err(|e| QuonitorError::Encryption(format!("Failed to write key file: {}", e)))?;
+
+        Ok(key.into())
     }
 
     pub fn encrypt(&self, data: &str) -> Result<Vec<u8>> {
