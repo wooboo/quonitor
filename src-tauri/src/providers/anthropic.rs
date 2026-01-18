@@ -159,8 +159,3 @@ impl QuotaProvider for AnthropicProvider {
         "Anthropic"
     }
 }
-
-    fn provider_name(&self) -> &'static str {
-        "Anthropic"
-    }
-}
