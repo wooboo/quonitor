@@ -55,10 +55,13 @@ impl GoogleProvider {
         let client = BasicClient::new(
             ClientId::new(config.client_id.clone()),
             Some(ClientSecret::new(config.client_secret.clone())),
-            AuthUrl::new("https://accounts.google.com/o/oauth2/v2/auth".to_string())?,
-            Some(TokenUrl::new("https://oauth2.googleapis.com/token".to_string())?)
+            AuthUrl::new("https://accounts.google.com/o/oauth2/v2/auth".to_string())
+                .map_err(|e| QuonitorError::Config(format!("Invalid auth URL: {}", e)))?,
+            Some(TokenUrl::new("https://oauth2.googleapis.com/token".to_string())
+                .map_err(|e| QuonitorError::Config(format!("Invalid token URL: {}", e)))?)
         )
-        .set_redirect_uri(RedirectUrl::new(config.redirect_uri.clone())?);
+        .set_redirect_uri(RedirectUrl::new(config.redirect_uri.clone())
+            .map_err(|e| QuonitorError::Config(format!("Invalid redirect URI: {}", e)))?);
 
         let token_result = client
             .exchange_code(oauth2::AuthorizationCode::new(code))
