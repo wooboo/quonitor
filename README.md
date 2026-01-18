@@ -122,8 +122,12 @@ The app can minimize to the system tray. Right-click the tray icon for options:
 ### OpenAI
 
 1. Get your API key from https://platform.openai.com/api-keys
-2. The app uses the `/v1/organization/usage/completions` endpoint
-3. Per-model tracking is fully supported
+2. **Important**: You must use a key with permissions to read usage data.
+   - If using a **Restricted Key** (recommended), ensure the "Usage" permission is set to "Read".
+   - If using an **Admin Key** (legacy), it should work by default.
+   - If using a **Project Key**, you may need to explicitly grant `organization.usage.read` scope or be an Organization Owner.
+3. The app uses the `/v1/organization/usage/completions` endpoint.
+4. Per-model tracking is fully supported.
 
 ### Anthropic/Claude
 
