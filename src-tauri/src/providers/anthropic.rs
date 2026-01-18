@@ -56,18 +56,13 @@ impl QuotaProvider for AnthropicProvider {
         let api_key = credentials.api_key.as_ref()
             .ok_or_else(|| QuonitorError::Auth("Anthropic requires API key".to_string()))?;
 
-        // Fetch usage data
-        let now = Utc::now();
-        let start_date = (now - chrono::Duration::days(1)).format("%Y-%m-%d").to_string();
-        let end_date = now.format("%Y-%m-%d").to_string();
-
-        let url = format!(
-            "https://api.anthropic.com/v1/organization/usage?start_date={}&end_date={}",
-            start_date, end_date
-        );
+        // Anthropic does not currently provide a public API for retrieving historical usage/cost.
+        // We validate the key by listing models, and return 0 usage.
+        
+        let url = "https://api.anthropic.com/v1/models?limit=1";
 
         let response = self.client
-            .get(&url)
+            .get(url)
             .header("x-api-key", api_key)
             .header("anthropic-version", "2023-06-01")
             .header("Content-Type", "application/json")
@@ -82,6 +77,23 @@ impl QuotaProvider for AnthropicProvider {
                 status, error_text
             )));
         }
+
+        // Key is valid if we got here.
+        // Return placeholder data since we can't fetch real usage.
+        let now = Utc::now();
+
+        Ok(QuotaData {
+            account_id: String::new(),
+            timestamp: now.timestamp(),
+            tokens_input: Some(0),
+            tokens_output: Some(0),
+            cost_usd: Some(0.0),
+            quota_limit: None,
+            quota_remaining: None,
+            model_breakdown: vec![],
+            metadata: Some("Anthropic API does not support usage tracking yet".to_string()),
+        })
+    }
 
         let usage_response: UsageResponse = response.json().await?;
 
