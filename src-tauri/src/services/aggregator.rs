@@ -44,6 +44,14 @@ impl Aggregator {
         quotas
     }
 
+    pub async fn validate_credentials(&self, provider_id: &str, credentials: &Credentials) -> Result<QuotaData> {
+        let provider = self.providers.get(provider_id)
+            .ok_or_else(|| crate::error::QuonitorError::Config(format!("Provider {} not found", provider_id)))?;
+
+        let quota = provider.fetch_quota(credentials).await?;
+        Ok(quota)
+    }
+
     pub async fn fetch_account_quota(&self, account_id: &str) -> Result<QuotaData> {
         let account = self.repo.get_account(account_id).await?
             .ok_or_else(|| crate::error::QuonitorError::Config(format!("Account {} not found", account_id)))?;

@@ -53,7 +53,8 @@ pub async fn add_account(
 ) -> Result<AccountResponse> {
     let account_id = Uuid::new_v4().to_string();
 
-    // Encrypt credentials
+    let initial_quota = state.aggregator.validate_credentials(&request.provider, &request.credentials).await?;
+
     let creds_json = serde_json::to_string(&request.credentials)?;
     let encrypted_creds = state.crypto.encrypt(&creds_json)?;
 
@@ -69,7 +70,11 @@ pub async fn add_account(
     state.repo.insert_account(&account).await
         .map_err(|e| QuonitorError::Database(e))?;
 
-    // Immediately fetch quota for this account
+    let mut quota_to_store = initial_quota;
+    quota_to_store.account_id = account_id.clone();
+    
+    state.cache.set(account_id.clone(), quota_to_store).await;
+
     tokio::spawn({
         let aggregator = state.aggregator.clone();
         let cache = state.cache.clone();
