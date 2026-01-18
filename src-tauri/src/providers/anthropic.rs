@@ -103,6 +103,7 @@ impl QuotaProvider for AnthropicProvider {
         "Anthropic"
     }
 }
+}
 
         let usage_response: UsageResponse = response.json().await?;
 
@@ -158,4 +159,5 @@ impl QuotaProvider for AnthropicProvider {
     fn provider_name(&self) -> &'static str {
         "Anthropic"
     }
+}
 }
