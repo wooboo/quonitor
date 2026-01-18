@@ -108,18 +108,16 @@ async fn main() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            add_account,
-            remove_account,
-            get_all_accounts,
-            get_all_quotas,
-            get_quota,
-            refresh_now,
-            refresh_account,
-            get_historical_snapshots,
-            get_model_usage_history,
-            get_setting,
-            set_setting,
-            cleanup_old_data,
+            api::commands::get_accounts,
+            api::commands::add_account,
+            api::commands::remove_account,
+            api::commands::get_historical_data,
+            api::commands::get_model_usage_history,
+            api::commands::update_settings,
+            api::commands::get_settings,
+            api::commands::manual_refresh,
+            api::commands::google_auth_start,
+            api::commands::google_auth_finish,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
