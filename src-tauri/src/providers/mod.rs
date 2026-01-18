@@ -33,7 +33,9 @@ pub struct ModelData {
 #[async_trait]
 pub trait QuotaProvider: Send + Sync {
     async fn fetch_quota(&self, credentials: &Credentials) -> Result<QuotaData>;
+    #[allow(dead_code)]
     fn supports_oauth(&self) -> bool;
+    #[allow(dead_code)]
     fn provider_name(&self) -> &'static str;
 }
 
@@ -57,6 +59,7 @@ impl ProviderRegistry {
         self.providers.get(provider)
     }
 
+    #[allow(dead_code)]
     pub fn list_providers(&self) -> Vec<String> {
         self.providers.keys().cloned().collect()
     }

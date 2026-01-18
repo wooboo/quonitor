@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 use chrono::Utc;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use super::{QuotaProvider, QuotaData, ModelData};
 use crate::db::Credentials;
 use crate::error::{QuonitorError, Result};
@@ -18,7 +18,7 @@ struct UsageResponse {
 #[derive(Debug, Deserialize)]
 struct UsageDataPoint {
     #[serde(default)]
-    timestamp: Option<String>,
+    _timestamp: Option<String>,
     #[serde(default)]
     input_tokens: i64,
     #[serde(default)]

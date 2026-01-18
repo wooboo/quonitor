@@ -28,6 +28,7 @@ uuid = { version = "1.11", features = ["v4", "serde"] }
 base64 = "0.22"
 aes-gcm = "0.10"
 async-trait = "0.1"
+dirs = "5.0"
 
 [features]
 default = ["custom-protocol"]

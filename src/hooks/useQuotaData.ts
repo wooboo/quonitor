@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { invoke } from "@tauri-apps/api/core";
-import type { QuotaData, AccountResponse } from "../types";
+import type { QuotaData, AccountResponse, QuotaSnapshot, ModelUsage } from "../types";
 
 export function useQuotaData() {
   const {
@@ -34,19 +34,19 @@ export function useQuotaData() {
 }
 
 export function useHistoricalData(accountId: string, days: number = 7) {
-  return useQuery({
+  return useQuery<QuotaSnapshot[]>({
     queryKey: ["historical", accountId, days],
     queryFn: () =>
-      invoke("get_historical_snapshots", { accountId, days }),
+      invoke<QuotaSnapshot[]>("get_historical_snapshots", { accountId, days }),
     enabled: !!accountId,
   });
 }
 
 export function useModelUsageHistory(accountId: string, days: number = 7) {
-  return useQuery({
+  return useQuery<ModelUsage[]>({
     queryKey: ["model-usage", accountId, days],
     queryFn: () =>
-      invoke("get_model_usage_history", { accountId, days }),
+      invoke<ModelUsage[]>("get_model_usage_history", { accountId, days }),
     enabled: !!accountId,
   });
 }

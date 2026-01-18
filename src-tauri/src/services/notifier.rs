@@ -1,5 +1,5 @@
 use std::sync::Arc;
-use chrono::Utc;
+use chrono::{Utc, Timelike};
 use notify_rust::Notification;
 use crate::db::{Repository, NotificationState};
 use crate::providers::QuotaData;
@@ -119,7 +119,7 @@ impl Notifier {
                 let current_hour = now.hour();
 
                 // Parse hours (format: "HH:MM")
-                if let (Ok(start_hour), Ok(end_hour)) = (
+                if let (Some(start_hour), Some(end_hour)) = (
                     start.split(':').next().and_then(|h| h.parse::<u32>().ok()),
                     end.split(':').next().and_then(|h| h.parse::<u32>().ok()),
                 ) {

@@ -1,5 +1,5 @@
 use tauri::{
-    AppHandle, Manager,
+    AppHandle, Manager, Emitter,
     tray::{TrayIcon, TrayIconBuilder, MouseButton, MouseButtonState},
     menu::{Menu, MenuItem},
 };
@@ -28,7 +28,9 @@ pub fn create_tray(app: &AppHandle) -> Result<TrayIcon> {
                 }
                 "refresh" => {
                     // Emit event to trigger refresh
-                    let _ = app.emit("refresh-requested", ());
+                    if let Err(e) = app.emit("refresh-requested", ()) {
+                        eprintln!("Failed to emit refresh event: {}", e);
+                    }
                 }
                 _ => {}
             }
@@ -49,20 +51,4 @@ pub fn create_tray(app: &AppHandle) -> Result<TrayIcon> {
         .build(app)?;
 
     Ok(tray)
-}
-
-pub fn update_tray_tooltip(tray: &TrayIcon, tooltip: &str) -> Result<()> {
-    tray.set_tooltip(Some(tooltip))?;
-    Ok(())
-}
-
-// Helper function to determine tray icon color based on quota status
-pub fn get_tray_status_color(usage_percentage: f64) -> &'static str {
-    if usage_percentage >= 90.0 {
-        "red"
-    } else if usage_percentage >= 70.0 {
-        "yellow"
-    } else {
-        "green"
-    }
 }

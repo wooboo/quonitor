@@ -3,7 +3,6 @@ use std::time::Duration;
 use tokio::time;
 use tokio::sync::RwLock;
 use crate::services::{Aggregator, Notifier, Cache};
-use crate::error::Result;
 use tracing::{info, error};
 
 pub struct Scheduler {
@@ -78,6 +77,7 @@ impl Scheduler {
         });
     }
 
+    #[allow(dead_code)]
     pub async fn stop(&self) {
         let mut running = self.running.write().await;
         *running = false;

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { Trash2, ChevronDown, ChevronUp, RefreshCw } from "lucide-react";
+import { Trash2, ChevronDown, ChevronUp } from "lucide-react";
 import TrendChart from "./TrendChart";
 import type { QuotaData, AccountResponse } from "../types";
 
@@ -55,10 +55,9 @@ export default function QuotaCard({ quota, account, onDelete }: QuotaCardProps) 
         return "bg-gray-600";
       default:
         return "bg-gray-600";
-    }
+      }
   };
 
-  const totalTokens = (quota.tokens_input || 0) + (quota.tokens_output || 0);
   const hasModelBreakdown = quota.model_breakdown && quota.model_breakdown.length > 0;
 
   return (

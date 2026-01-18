@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::Serialize;
 
 #[derive(Debug, thiserror::Error)]
 pub enum QuonitorError {
@@ -25,10 +25,13 @@ pub enum QuonitorError {
 
     #[error("Invalid configuration: {0}")]
     Config(String),
+
+    #[error("Tauri error: {0}")]
+    Tauri(#[from] tauri::Error),
 }
 
 impl Serialize for QuonitorError {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
     where
         S: serde::Serializer,
     {

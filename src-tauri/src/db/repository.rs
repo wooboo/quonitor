@@ -107,6 +107,7 @@ impl Repository {
         Ok(())
     }
 
+    #[allow(dead_code)]
     pub async fn get_latest_snapshot(&self, account_id: &str) -> Result<Option<QuotaSnapshot>> {
         let snapshot = sqlx::query_as::<_, QuotaSnapshot>(
             "SELECT id, account_id, timestamp, tokens_input, tokens_output, cost_usd,

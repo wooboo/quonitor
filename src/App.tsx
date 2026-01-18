@@ -6,7 +6,6 @@ import QuotaCard from "./components/QuotaCard";
 import AccountManager from "./components/AccountManager";
 import SettingsPanel from "./components/SettingsPanel";
 import { useQuotaData } from "./hooks/useQuotaData";
-import type { AccountResponse, QuotaData } from "./types";
 
 function App() {
   const [showAccountManager, setShowAccountManager] = useState(false);

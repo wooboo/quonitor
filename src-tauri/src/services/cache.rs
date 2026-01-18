@@ -35,6 +35,7 @@ impl Cache {
         data.remove(account_id);
     }
 
+    #[allow(dead_code)]
     pub async fn clear(&self) {
         let mut data = self.data.write().await;
         data.clear();

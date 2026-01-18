@@ -1,17 +1,17 @@
 use async_trait::async_trait;
 use chrono::Utc;
-use super::{QuotaProvider, QuotaData, ModelData};
+use super::{QuotaProvider, QuotaData};
 use crate::db::Credentials;
 use crate::error::{QuonitorError, Result};
 
 pub struct GoogleProvider {
-    client: reqwest::Client,
+    _client: reqwest::Client,
 }
 
 impl GoogleProvider {
     pub fn new() -> Self {
         Self {
-            client: reqwest::Client::new(),
+            _client: reqwest::Client::new(),
         }
     }
 }

@@ -44,6 +44,7 @@ pub struct NotificationState {
     pub last_95_percent_notified: Option<i64>,
 }
 
+#[allow(dead_code)]
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Setting {
     pub key: String,
@@ -58,6 +59,7 @@ pub struct Credentials {
 }
 
 impl Credentials {
+    #[allow(dead_code)]
     pub fn new_api_key(api_key: String) -> Self {
         Self {
             api_key: Some(api_key),
@@ -66,6 +68,7 @@ impl Credentials {
         }
     }
 
+    #[allow(dead_code)]
     pub fn new_oauth(token: String, refresh_token: Option<String>) -> Self {
         Self {
             api_key: None,

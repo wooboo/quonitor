@@ -10,7 +10,6 @@ mod api;
 mod tray;
 
 use std::sync::Arc;
-use tauri::Manager;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 use db::Repository;
@@ -21,6 +20,9 @@ use api::{AppState, commands::*};
 
 #[tokio::main]
 async fn main() {
+    // Set environment variable to fix rendering issues on some Linux configurations
+    std::env::set_var("WEBKIT_DISABLE_COMPOSITING_MODE", "1");
+
     // Initialize logging
     tracing_subscriber::registry()
         .with(
@@ -31,13 +33,14 @@ async fn main() {
         .init();
 
     // Get data directory
-    let data_dir = tauri::api::path::app_data_dir(&tauri::Config::default())
+    let data_dir = dirs::data_local_dir()
+        .map(|p| p.join("quonitor"))
         .expect("Failed to get app data directory");
 
     std::fs::create_dir_all(&data_dir).expect("Failed to create data directory");
 
     let db_path = data_dir.join("quonitor.db");
-    let db_url = format!("sqlite://{}", db_path.display());
+    let db_url = format!("sqlite://{}?mode=rwc", db_path.display());
 
     // Initialize database
     let repo = Arc::new(
@@ -92,7 +95,7 @@ async fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
         .manage(app_state)
-        .setup(|app| {
+        .setup(move |app| {
             // Create system tray
             let _tray = tray::create_tray(&app.handle())?;
 

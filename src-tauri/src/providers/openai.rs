@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 use chrono::Utc;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use super::{QuotaProvider, QuotaData, ModelData};
 use crate::db::Credentials;
 use crate::error::{QuonitorError, Result};
@@ -17,13 +17,13 @@ struct UsageResponse {
 #[derive(Debug, Deserialize)]
 struct UsageDataPoint {
     #[serde(default)]
-    aggregation_timestamp: Option<i64>,
+    _aggregation_timestamp: Option<i64>,
     #[serde(default)]
     n_requests: i64,
     #[serde(default)]
-    operation: Option<String>,
+    _operation: Option<String>,
     #[serde(default)]
-    snapshot_id: Option<String>,
+    _snapshot_id: Option<String>,
     #[serde(default)]
     n_context_tokens_total: i64,
     #[serde(default)]
